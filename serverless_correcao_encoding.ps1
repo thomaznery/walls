@@ -1,0 +1,1 @@
+'$C:\Users\thoma\Documents\WSS\walls\.serverless\requirements.txt' | Out-File -Encoding "UTF8" 'C:\Users\thoma\Documents\WSS\walls\.serverless'
