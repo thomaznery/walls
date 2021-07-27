@@ -1,6 +1,12 @@
-class RSIDolar:
+import time
+from market.ClockHelper import CHelper
+
+
+class RSIDolar():
     def __init__(self) -> None:
-        self.rsi = 0
+
+        self.name = 'Estrategia RSI DOLAR 1 MIN'
+        self.rsi = 78
         self.signal = ('compra', 'venda')
         pass
 
@@ -8,6 +14,7 @@ class RSIDolar:
         pass
 
     def run(self):
+        self.update()
         if self.rsi > 70:
             return self.signal[0]
         if self.rsi < 30:
