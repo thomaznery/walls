@@ -30,3 +30,6 @@ class CHelper:
         if not self.is_feriado() and self.is_dia_util():
             return int(self.hora()) in self.horario_pregao
         return False
+
+    def now(self):
+        return self.dtime.now()

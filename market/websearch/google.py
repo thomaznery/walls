@@ -4,7 +4,7 @@ import re
 
 
 class WSGoogle:
-    def __init__(self, driver) -> None:
+    def __init__(self) -> None:
         opt = webdriver.ChromeOptions()
         opt.add_argument("--headless")
         opt.add_argument("--disable-gpu")

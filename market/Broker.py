@@ -3,11 +3,6 @@ from threading import local
 import MetaTrader5 as mt5
 import boto3
 
-"""
-    ENVIO APENAS(NAO CONSULTAR DADOS)
-    nao fazer consuulta em banco
-"""
-
 
 class Broker:
 
