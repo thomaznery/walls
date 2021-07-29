@@ -2,7 +2,7 @@ from selenium import webdriver
 import time
 import re
 
-
+  
 class WSGoogle:
     def __init__(self) -> None:
         opt = webdriver.ChromeOptions()

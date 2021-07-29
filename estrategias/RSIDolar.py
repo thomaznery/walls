@@ -5,9 +5,12 @@ from market.ClockHelper import CHelper
 class RSIDolar():
     def __init__(self) -> None:
 
-        self.name = 'Estrategia RSI DOLAR 1 MIN'
-        self.rsi = 78
+        self.NAME = 'RSI DOLAR 1 MIN'
+        self.RSI = 78
         self.signal = ('compra', 'venda')
+        self.TEMPO_GRAFICO = 1
+        self.ATIVO = 'WDOFUT'
+        self.ATIVO_LABEL = 'DÓLAR FUTURO'
         pass
 
     def update(self):

@@ -1,8 +1,8 @@
+from market.MarketData import MarketData
 from threading import Thread, Lock
 from queue import Queue
 from estrategias.RSIDolar import RSIDolar
 import time
-import threading
 from market.ClockHelper import CHelper
 
 
@@ -26,7 +26,6 @@ def execute():
                 rsi_dolar_sinais.put(signal)
                 threads_ordens.put(
                     Thread(target=send_signal, name=f'Thread criada no {c} [/b]').start())
-
     except Exception as e:
         print(e)
     except KeyboardInterrupt as kb:
@@ -34,12 +33,14 @@ def execute():
 
 
 if __name__ == '__main__':
-    print("processo de threads sendo criados, em execução..........")
     SIGNAL = None
     rsi_dolar_sinais = Queue(1)
     instance = RSIDolar()
     ch = CHelper()
     threads_ordens = Queue(2)
     threads_rsi_dolar = Queue(1)
-    threads_rsi_dolar.put(
-        Thread(target=execute, name='Thread[execute rsi.dolar]').start())
+    """threads_rsi_dolar.put(
+        Thread(target=execute, name='Thread[execute rsi.dolar]').start())"""
+
+    md = MarketData()
+    print(md.last('wdoq21'))

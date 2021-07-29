@@ -2,4 +2,5 @@ from market.MarketData import MarketData
 
 
 def test_conntect_rt():
-    assert(1 == 1)
+    md = MarketData()
+    assert(isinstance(md.last("wdoq21"), str))
