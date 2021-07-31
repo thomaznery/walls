@@ -15,11 +15,11 @@ def main():
         eRsi = RSIDolar()
         mercado_aberto = ch.is_pregao_aberto()
 
-        ibov = str(md.last("IBOV"))
-        dolar = str(md.last('wdofut'))
+        indice = str(md.last("winq21")['preco'])
+        dolar = str(md.last('wdou21')['preco'])
     except Exception as e:
         print(e)
-    return render_template('main.html', ibov=ibov, dolar=dolar, model=eRsi.__dict__)
+    return render_template('main.html', indice=indice, dolar=dolar, model=eRsi.__dict__)
 
 
 def do_login():

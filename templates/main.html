@@ -8,7 +8,7 @@
   </head>
 <body>  
   <div class="container-xxl">
-    <div class="row" id='principal' >
+    <div class="row">
       <div class="col">
         <h1>Wss-sinais</h1>
         <p>Veja nosso grupo no telegram!</p>
@@ -29,9 +29,9 @@
       <div class="col">
         <div class="card">
           <div class="card-header">
-            {% if ibov %}
-            <p><strong>IBOVESPA</strong></p>
-            <p><strong>{{ibov}}</strong></p>            
+            {% if indice %}
+            <p><strong>Indice Futuro</strong></p>
+            <p><strong>{{indice}}</strong></p>            
             {% else %}
               <h1>Mercado fechado</h1>
             {% endif %}

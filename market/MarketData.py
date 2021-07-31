@@ -1,8 +1,7 @@
-
-from ClockHelper import CHelper
+from  market.ClockHelper import CHelper
 import socket
 import logging
-import TypeDataTryd as tdt
+import market.TypeDataTryd as tdt
 
 
 # deixar o tryd aberto e logado, com servido de DDL ativo na mesma maquina
@@ -14,9 +13,8 @@ def ByteConvert(dataInfo, ativo):
     return str.encode(dataInfo+ativo+"#")
 
 
-class MarketData():
-    def __init__(self) -> None:
-        # self.google = WSGoogle()
+class MarketData:
+    def __init__(self) -> None:       
         logging.basicConfig(filename='socket_marketData.log',
                             encoding='utf-8', level=logging.DEBUG)
         self.ch = CHelper()
@@ -25,8 +23,7 @@ class MarketData():
         try:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 s.connect((HOST, PORT))                
-                try:
-                    print('aaaaaaaaa')
+                try:            
                     arrInfo = ''
                     s.sendall(ByteConvert(tdt.NEGOCIO, ativo))
                     data = s.recv(3250)

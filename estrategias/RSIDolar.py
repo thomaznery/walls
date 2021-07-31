@@ -2,9 +2,8 @@ import time
 from market.ClockHelper import CHelper
 
 
-class RSIDolar():
+class RSIDolar:
     def __init__(self) -> None:
-
         self.NAME = 'RSI DOLAR 1 MIN'
         self.RSI = 78
         self.signal = ('compra', 'venda')
