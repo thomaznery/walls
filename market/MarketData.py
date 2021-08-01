@@ -2,6 +2,7 @@ from  market.ClockHelper import CHelper
 import socket
 import logging
 import market.TypeDataTryd as tdt
+import requests
 
 
 # deixar o tryd aberto e logado, com servido de DDL ativo na mesma maquina
@@ -47,7 +48,3 @@ class MarketData:
         except Exception as e:
             print("Erro ao contectar no servidor RTD")
             logging.info(e)
-
-    def registrarTopicos(self, topicos: list):
-        for topic in topicos:
-            self.clientRTD.register_topic(topic)

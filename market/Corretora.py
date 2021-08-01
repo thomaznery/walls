@@ -11,30 +11,35 @@ class Negocio:
     def get_preco(self) -> float:
         return float(self.preco)
 
+
+# o objeto Agente é criado e mantido até o final do pregão, acumulando os valores no escopo da corretora
+# os trades(negocio) são divididos em duas formas , TRADE AGRESSIVO, onde, o agressor = Comprador e
+# 
 class Agente:
     def __init__(self, id, nome) -> None:
-        self.id = id
+        self.id = int(id)
         self.nome = nome
         self.agressao_compras = []
         self.agressao_vendas = []     
         self.compras_passivas = []
         self.vendas_passivas = []
+
         self.quantidade_de_ordens = 0
     
-    def increment_trade_agressao(self,negocio):        
+    # vai incluir um trade de agressao para o agente, na compra ou na venda
+    def increment_trade_agressao(self,negocio:Negocio):        
         self.quantidade_de_ordens += 1       
-        if 'Comp' in negocio.agressor :            
+        if self.id == int(negocio.comprador) :            
             self.agressao_compras.append(negocio)                
-        if 'Vend' in negocio.agressor:
+        if self.id == int(negocio.vendedor):
             self.agressao_vendas.append(negocio)
         
-    def increment_trade_passivo(self, negocio):
+    def increment_trade_passivo(self, negocio:Negocio):
         self.quantidade_de_ordens += 1       
-        if 'Comp' in negocio.agressor: 
-            print(negocio)
-            self.vendas_passivas.append(negocio)                
-        if 'Vend' in negocio.agressor: 
-            self.compras_passivas.append(negocio)
+        if self.id == int(negocio.comprador): 
+            self.compras_passivas.append(negocio)                
+        if self.id == int(negocio.vendedor): 
+            self.vendas_passivas.append(negocio)
 
     def get_vendas_passivas(self):
         sum = 0

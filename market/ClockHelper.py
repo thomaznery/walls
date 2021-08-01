@@ -21,6 +21,12 @@ class CHelper:
     def min(self):
         return self.dtime.now().strftime('%M')
 
+    def ano(self):
+        return self.dtime.now().strftime('%Y')
+        
+    def mes(self):
+        return self.dtime.now().strftime('%m')
+
     def is_feriado(self) -> bool:
         return self.dtime.now().strftime(f'%d/%m/%Y') in self.feriados
 
@@ -34,3 +40,6 @@ class CHelper:
 
     def now(self):
         return self.dtime.now()
+
+    def hoje(self):
+        return self.dtime.now().strftime('')
