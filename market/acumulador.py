@@ -1,7 +1,10 @@
-from .helper import acumuladorHelper as ah
+from queue import Queue
+from .helper.AcumuladorHelper import *
+from threading import Thread
 from market.Corretora import Agente, Negocio
 from market.MarketData import MarketData
-from market.output import print_agentes
+from market.output import print_agentes, print_context
+from .helper.ClockHelper import CHelper
 
 
 # lista de corretoras monitoras pelo sistema, apenas corretas grandes que movimentam o mercado
@@ -36,9 +39,13 @@ PONTO_MINI_INDICE = 0.20
     Classe com funcao de ler e acumular todos os negocios dos dias, separados por corretora
 """
 
+ch = CHelper()
+_NOME = 'Times and Trader WSS'
 
-class acumula:
+
+class acumula(Thread):
     def __init__(self, ativo) -> None:
+        Thread.__init__(self)
         self.market = MarketData()
         self.agentes = []
         self.ativo = ativo.upper()
@@ -49,9 +56,14 @@ class acumula:
             self.agentes.append(Agente(key, value))
 
     # receber o negocio e enviar ao coletor
+
     def run(self):
-        negocio = self.market.ultimo_negocio(self.ativo)
-        self.colector(negocio)
+        cont = 0
+        # while ch.is_pregao_aberto():
+        while cont in range(0, 5, 1):
+            cont += 1
+            negocio = self.market.ultimo_negocio(self.ativo)
+            self.colector(negocio)
 
     # fazer a analise do negocio e direcionado ao agente agressor
     def colector(self, negocio):
@@ -66,28 +78,36 @@ class acumula:
         index_comprador = self.get_index(int(comprador))
         index_vendedor = self.get_index(int(vendedor))
 
-        ah.direcionar_negocio(self.agentes, index_comprador,
-                              index_vendedor, negocio_model, agressor)
+        direcionar_negocio(self.agentes, index_comprador,
+                           index_vendedor, negocio_model, agressor)
         self.somar_quantidade_dia(agressor, quantidade)
         self.acumular_volume(quantidade, preco)
+        print_agentes(self.agentes)
 
     def somar_quantidade_dia(self, agressor, quantidade):
-        if ah.isAgressaoCompra(agressor):
+        if isAgressaoCompra(agressor):
             self.qtd_agressao_compra_dia += quantidade
         else:
             self.qtd_agressao_venda_dia += quantidade
 
     def acumular_volume(self, quantidade, preco):
         ativo = self.ativo
-        preco = ah.preco_to_float(preco, ativo)
+        preco = preco_to_float(preco, ativo)
         quantidade = int(quantidade)
         volume = 0
-        if ah.is_dolar(ativo):
+        if is_dolar(ativo):
             volume = (preco * PONTO_MINI_DOLAR) * quantidade
-        if ah.is_indice(ativo):
+        if is_indice(ativo):
             volume = (preco * PONTO_MINI_INDICE) * quantidade
-        if ah.is_acao(ativo):
+        if is_acao(ativo):
             volume = preco * quantidade
+        content = {
+            'ativo': self.ativo,
+            'preco': preco,
+            'volume': volume
+        }
+        # print_context(content)
+
         self.volume_total += volume
 
     def get_index(self, numero):

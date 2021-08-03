@@ -29,7 +29,6 @@ if __name__ == '__main__':
     rsi = RSIDolar()
     rsi.start()
 
-    """   threading.Thread(target=monitorar_threads,
-                        name='Thread[monitorar_threads]').start()"""
+    acumulador_indice.start()
 
     #Thread(target=iniciar_cobertura, name='Thread[acumulador_indice]').start()

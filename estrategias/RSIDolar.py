@@ -25,7 +25,6 @@ class RSIDolar(Thread):
         self.name = NOME
         self.signal = {1: 'compra', 2: 'venda'}
         self.tendencia = {1: 'alta', 2: 'baixa'}
-        print(_QUEUE_SIZE)
         self.medias_15 = Queue(_QUEUE_SIZE)
 
         # esta pilha controla o excesso de ordens, pois, não ira criar uma
@@ -66,8 +65,8 @@ class RSIDolar(Thread):
                 'maxSize': self.medias_15.maxsize}
             print_context(content)
 
-    # se as medias se deslocaram , e se esse deslocamento foi maior que 3 pts de dolar
 
+    # se as medias se deslocaram , e se esse deslocamento foi maior que 3 pts de dolar
     def identificar_tendencia(self):
         result = None
         values = []
@@ -91,6 +90,7 @@ class RSIDolar(Thread):
         }
         # print_context(context)
         return result
+
 
     # acumular medias por 15 minutos, sendo que  get_frequency() / 60  = quantidade de loops necessário para se
     # ter um minutos de media... então, x15, pois precisamos de 15min de mercado aberto

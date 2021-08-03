@@ -1,5 +1,5 @@
 import threading
-from market.helper.ClockHelper import CHelper
+from .helper.ClockHelper import CHelper
 import socket
 import logging
 import market.TypeDataTryd as tdt
