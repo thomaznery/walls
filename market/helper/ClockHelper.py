@@ -2,7 +2,6 @@ from datetime import datetime
 import requests
 
 
-
 class CHelper:
 
     def __init__(self) -> None:
@@ -23,7 +22,7 @@ class CHelper:
 
     def ano(self):
         return self.dtime.now().strftime('%Y')
-        
+
     def mes(self):
         return self.dtime.now().strftime('%m')
 

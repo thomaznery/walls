@@ -1,22 +1,20 @@
 from estrategias.RSIDolar import RSIDolar
 from market.MarketData import MarketData
-from market.ClockHelper import CHelper
 from flask import Flask, render_template
 from flask import request
 
 app = Flask(__name__)
 md = MarketData()
-ch = CHelper()
+
 
 
 @app.route("/", methods=['GET'])
 def main():
     try:
         eRsi = RSIDolar()
-        mercado_aberto = ch.is_pregao_aberto()
 
-        indice = str(md.last("winq21")['preco'])
-        dolar = str(md.last('wdou21')['preco'])
+        indice = str(md.ultimo_negocio("winq21")['preco'])
+        dolar = str(md.ultimo_negocio('wdou21')['preco'])
     except Exception as e:
         print(e)
     return render_template('main.html', indice=indice, dolar=dolar, model=eRsi.__dict__)
