@@ -39,7 +39,6 @@ def print_threads():
 
 
 def print_context(context: dict):
-    os.system('cls' if os.name == 'nt' else 'clear')
     coluns = []
     values = []
     for key, value in context.items():
