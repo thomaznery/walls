@@ -9,7 +9,8 @@ def somar_list(array):
 
 
 class Negocio:
-    def __init__(self, preco, hora, quantidade, comprador, vendedor, agressor) -> None:
+    def __init__(self, numero, preco, hora, quantidade, comprador, vendedor, agressor) -> None:
+        self.numero = numero
         self.preco = preco
         self.hora = hora
         self.quantidade = quantidade
