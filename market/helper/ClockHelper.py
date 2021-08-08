@@ -23,6 +23,10 @@ def ano():
     return dtime.now().strftime('%Y')
 
 
+def seg():
+    return dtime.now().strftime('%S')
+
+
 def mes():
     return dtime.now().strftime('%m')
 

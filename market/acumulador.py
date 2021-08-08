@@ -1,9 +1,9 @@
-
+import pickle
+from market.http import Post
 from .helper.AcumuladorHelper import *
 from threading import Thread
 from market.Corretora import Agente, Negocio
 from .MarketData import ultimo_negocio
-from market.output import print_agentes, print_context
 from .helper.ClockHelper import *
 from .db import Conexao
 
@@ -39,7 +39,6 @@ TEMPO_GRAFICO = 5
 """"
     Classe com funcao de ler e acumular todos os negocios dos dias, separados por corretora
 """
-# quando o resto da divisao dos minutos por 5 foir igual a zero, executar
 
 
 _NOME = 'Times and Trader WSS'
@@ -57,20 +56,28 @@ class acumula(Thread):
             self.agentes.append(Agente(key, value, self.ativo))
 
         self.db = Conexao()
+        self.httpPost = Post()
 
-    # receber o negocio e enviar ao coletor
-
-    def run(self):
+    def run(self):  # receber o negocio e enviar ao coletor
+        import time
+        # while is_pregao_aberto():
         cont = 0
-        # while ch.is_pregao_aberto():
-        cont += 1
-        negocio = ultimo_negocio(self.ativo)
-        print(negocio)
-        self.colector(negocio)
+        while cont in range(0, 20, 1):
+            time.sleep(1)
+            cont += 1
+            negocio = ultimo_negocio(self.ativo)
+            self.colector(negocio)
         self.db.close()
 
-    # fazer a analise do negocio e direcionado ao agente agressor
-    def colector(self, negocio):
+    def get_state(self):
+        return {
+            'ativo': self.ativo,
+            'qtd_agressao_compra_dia': self.qtd_agressao_compra_dia,
+            'qtd_agressao_venda_dia': self.qtd_agressao_venda_dia,
+            'volume_total': self.volume_total
+        }
+
+    def colector(self, negocio):  # coletando o negocio e direcionado ao agente agressor
         numero = negocio['numero']
         agressor = negocio['agressor']
         preco = negocio['preco']
@@ -78,19 +85,21 @@ class acumula(Thread):
         vendedor = negocio['vendedor']
         quantidade = int(negocio['qntd'])
         negocio_model = Negocio(numero,
-                                preco, negocio['hora'], quantidade, comprador, vendedor, agressor)
+                                preco, negocio['hora'], quantidade,
+                                comprador, vendedor, agressor)
 
         index_comprador = self.get_index(int(comprador))
         index_vendedor = self.get_index(int(vendedor))
 
-        # salvar DB
-        self.db.incluir_negocio(negocio, self.ativo)
+        if int(seg()) % 5 == 0:
+            self.httpPost.send_acumulador_state(self.get_state())  # envia aa camada de view do django um print do estado do acumulador
 
-        # em memoria
-        direcionar_negocio(self.agentes, index_comprador,
-                           index_vendedor, negocio_model, agressor)
-        self.somar_quantidade_dia(agressor, quantidade)
-        self.acumular_volume(quantidade, preco)
+        # self.db.incluir_negocio(negocio, self.ativo)
+
+        # direcionar_negocio(self.agentes, index_comprador,
+        #                  index_vendedor, negocio_model, agressor)
+        # self.somar_quantidade_dia(agressor, quantidade)
+        # self.acumular_volume(quantidade, preco)
 
     def somar_quantidade_dia(self, agressor, quantidade):
         if isAgressaoCompra(agressor):

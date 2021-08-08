@@ -20,11 +20,10 @@ class Conexao(object):
         cursor = self.con.cursor()
         tabela = ativo[0:3]
         try:
-            agressor = neg['agressor'][1]
+            agressor = neg['agressor'][0]
             hora = f"{dia('%Y/%m/%d ') }{neg['hora']}"
-            print(hora)
-            sql = f"insert into marketdata_{tabela}_book (id, ativo,  hora, preco, quantidade, comprador, vendedor, agressor)\
-                values {int(neg['numero']), ativo,  hora, preco_to_float(neg['preco'], ativo), int(neg['qntd']), int(neg['comprador']), int(neg['vendedor']), agressor}"
+            sql = f"insert into marketdata_{tabela}_book (ativo,  hora, preco, quantidade, comprador, vendedor, agressor, numero)\
+                values {ativo,  hora, preco_to_float(neg['preco'], ativo), int(neg['qntd']), int(neg['comprador']), int(neg['vendedor']), agressor, int(neg['numero'])}"
             cursor.execute(sql)
             self.con.commit()
             cursor.close()
