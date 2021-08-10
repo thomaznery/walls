@@ -1,16 +1,13 @@
 from threading import Thread
 from market.output import print_threads, print_context
-from market.helper.ClockHelper import CHelper
-from market.MarketData import MarketData
+from market.helper.ClockHelper import is_pregao_aberto
+from market.MarketData import rsi_1min_dolar, mm_exponencial_15
 from queue import Queue
 import time
 from market.Signal import Send_Signal
 
-ch = CHelper()
-marketD = MarketData()
 
-
-NOME = 'RSI DOLAR - Halfredo Menezes'
+NOME = 'RSI DOLAR - Alfredo Menezes'
 TEMPO_GRAFICO = 1
 ATIVOS = ['WDOFUT']
 _FREQUENCY = 0.5  # segundos
@@ -22,7 +19,6 @@ class RSIDolar(Thread):
     def __init__(self) -> None:
         Thread.__init__(self)
         self.rsi = None
-        self.name = NOME
         self.signal = {1: 'compra', 2: 'venda'}
         self.tendencia = {1: 'alta', 2: 'baixa'}
         self.medias_15 = Queue(_QUEUE_SIZE)
@@ -34,11 +30,11 @@ class RSIDolar(Thread):
 
     def update(self):
         if self.medias_15.full():
-            self.rsi = marketD.rsi_1min_dolar()
+            self.rsi = rsi_1min_dolar()
         self.acumular_media_15()
 
     def run(self):
-        while ch.is_pregao_aberto():
+        while is_pregao_aberto():
             tendencia = None
             signal = None
             self.rsi = None
@@ -65,8 +61,8 @@ class RSIDolar(Thread):
                 'maxSize': self.medias_15.maxsize}
             print_context(content)
 
-
     # se as medias se deslocaram , e se esse deslocamento foi maior que 3 pts de dolar
+
     def identificar_tendencia(self):
         result = None
         values = []
@@ -91,11 +87,11 @@ class RSIDolar(Thread):
         # print_context(context)
         return result
 
-
     # acumular medias por 15 minutos, sendo que  get_frequency() / 60  = quantidade de loops necessário para se
     # ter um minutos de media... então, x15, pois precisamos de 15min de mercado aberto
+
     def acumular_media_15(self):
-        media = marketD.mm_exponencial_15()
+        media = mm_exponencial_15()
         if self.medias_15.full():
             self.medias_15.get()
             self.medias_15.put(media)

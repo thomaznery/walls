@@ -27,7 +27,7 @@ def isLeilao(agressor) -> bool:
 
 # se for uma agressao de compra,  incluiremos o negocio na variavel de lista de agressoes DO COMPRADOR e na lista de passivos do VENDEDOR
 # se for uma agressao de venda, incluiremos o negocio na vriavel de lista de agressoes DO VENDEDOR e na lista de passivos do COMPRADOR
-def direcionar_negocio(agentes, index_comprador, index_vendedor, negocio_model, agressor):
+def direcionar_negocio_em_memoria(agentes, index_comprador, index_vendedor, negocio_model, agressor):
     if isLeilao(agressor):
         agentes[index_comprador].increment_trade_passivo(negocio_model)
         agentes[index_vendedor].increment_trade_passivo(negocio_model)

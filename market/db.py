@@ -30,6 +30,19 @@ class Conexao(object):
         except (Exception, psycopg2.Error) as error:
             print(f"Erro ao executar query incluir_negocio_wdo \n{error}")
 
+    def get_las_minute(self, ativo, coluns, groupby) -> None:
+        cursor = self.con.cursor()
+        tabela = ativo[0:3]
+        try:
+            import pandas as pd
+            sql = f"select {coluns} from marketdata_{tabela}_book where hora > (now() - interval '14 hours') {groupby}"
+            cursor.execute(sql)
+            models = pd.read_sql_query(sql, self.con)
+            return models
+        except (Exception, psycopg2.Error) as error:
+            print(f"Erro ao executar query get_las_minute \n{error}")
+        pass
+
     def close(self):
         # closing database connection.
         if self.con:

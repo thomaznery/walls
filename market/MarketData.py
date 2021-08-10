@@ -13,12 +13,12 @@ def ByteConvert(dataInfo, ativo):
 def ultimo_negocio(ativo):
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.settimeout(3)
+            s.settimeout(4)
             s.connect((HOST, PORT))
             try:
                 arrInfo = ''
                 s.sendall(ByteConvert(tdt.NEGOCIO, ativo))
-                data = s.recv(3250)
+                data = s.recv(58)
                 arrInfo = data.decode().replace(
                     'NEG!', '').replace('#', '').split("|")
                 negocio = {

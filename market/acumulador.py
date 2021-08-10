@@ -1,5 +1,7 @@
 import pickle
-from market.http import Post
+from queue import Queue
+import queue
+from market.http import send_acumulador_state
 from .helper.AcumuladorHelper import *
 from threading import Thread
 from market.Corretora import Agente, Negocio
@@ -54,30 +56,33 @@ class acumula(Thread):
         self.volume_total = 0
         for key, value in corretoras.items():
             self.agentes.append(Agente(key, value, self.ativo))
-
         self.db = Conexao()
-        self.httpPost = Post()
 
     def run(self):  # receber o negocio e enviar ao coletor
-        import time
-        # while is_pregao_aberto():
+        not_replicate_order = Queue(10)
+
         cont = 0
-        while cont in range(0, 20, 1):
-            time.sleep(1)
+        while cont in range(0, 25, 1):
+            # while is_pregao_aberto():
             cont += 1
             negocio = ultimo_negocio(self.ativo)
-            self.colector(negocio)
+
+            if not not_replicate_order.queue.__contains__(int(negocio['numero'])):
+                not_replicate_order.put(int(negocio['numero']))
+
         self.db.close()
 
     def get_state(self):
-        return {
+        state_acumulador = {
             'ativo': self.ativo,
             'qtd_agressao_compra_dia': self.qtd_agressao_compra_dia,
             'qtd_agressao_venda_dia': self.qtd_agressao_venda_dia,
-            'volume_total': self.volume_total
+            'volume_total': self.volume_total,
+            'agentes': self.agentes
         }
+        return state_acumulador
 
-    def colector(self, negocio):  # coletando o negocio e direcionado ao agente agressor
+    def colector(self, negocio):
         numero = negocio['numero']
         agressor = negocio['agressor']
         preco = negocio['preco']
@@ -87,28 +92,41 @@ class acumula(Thread):
         negocio_model = Negocio(numero,
                                 preco, negocio['hora'], quantidade,
                                 comprador, vendedor, agressor)
-
-        index_comprador = self.get_index(int(comprador))
+        #self.db.incluir_negocio(negocio, self.ativo)
+        index_comprador = self.get_index(int(comprador))  # index na lista em memoria
         index_vendedor = self.get_index(int(vendedor))
 
         if int(seg()) % 5 == 0:
-            self.httpPost.send_acumulador_state(self.get_state())  # envia aa camada de view do django um print do estado do acumulador
+            state = self.get_state()
+            send_acumulador_state(state)
 
-        # self.db.incluir_negocio(negocio, self.ativo)
+        if int(seg()) % 60 == 0:
+            data = self.db.get_las_minute(self.ativo, 'max(preco) as max_preco,  min(preco) as min_preco , sum(quantidade) as quantidade ', 'group by agressor')
+            data['var'] = round((data.at[0, 'max_preco'] - data.at[0, 'min_preco']) / data.at[0, 'min_preco'] * 100, 2)
 
-        # direcionar_negocio(self.agentes, index_comprador,
-        #                  index_vendedor, negocio_model, agressor)
-        # self.somar_quantidade_dia(agressor, quantidade)
-        # self.acumular_volume(quantidade, preco)
+            # a cada minuto tem um objeto do tipo
+            # max_preco  min_preco  quantidade  var
+            # 0   529050.0   528500.0         186  0.1
+            # 1   529050.0   528500.0          18  0.1
 
-    def somar_quantidade_dia(self, agressor, quantidade):
+        direcionar_negocio_em_memoria(self.agentes, index_comprador,
+                                      index_vendedor, negocio_model, agressor)
+
+        self.acumular_volume(quantidade, preco, agressor)
+
+        # ULTIMA HORA DO PREGAO salvar todos os negocios em um temp/ para utilizar no proximo dia
+        if int(hora()) > 16:  # depois das 17 a cada 5 segundos
+            with open('market\\helper\\temp\\lastday_wdo.pickle', 'wb') as handle:
+                pickle.dump(dict(negocio), handle, protocol=pickle.DEFAULT_PROTOCOL)
+
+    # acumula volume diario do ativo
+
+    def acumular_volume(self, quantidade, preco, agressor):
         if isAgressaoCompra(agressor):
             self.qtd_agressao_compra_dia += quantidade
         else:
             self.qtd_agressao_venda_dia += quantidade
 
-    # acumula volume diario do ativo
-    def acumular_volume(self, quantidade, preco):
         ativo = self.ativo
         preco = preco_to_float(preco, ativo)
         quantidade = int(quantidade)
@@ -123,6 +141,7 @@ class acumula(Thread):
         self.volume_total += volume
 
     # retorna o indes em que o agente espa posicionado dentro da lista de agentes da classe
+    # em memoria
     def get_index(self, numero):
         numero = int(numero)
         index = 0
